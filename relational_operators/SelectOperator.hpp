@@ -131,7 +131,10 @@ class SelectOperator : public RelationalOperator {
         if (input_relation.hasIndexScheme()) {
             for (const auto &index : input_relation.getIndexScheme()) {
                 const IndexSubBlockDescription &index_description = index.second;
+                std::cout << "Checking index type" << std::endl;
+                std::cout << index_description.IndexSubBlockType_Name(index_description.sub_block_type()) << std::endl;
                 if (index_description.IndexSubBlockType_Name(index_description.sub_block_type()) == "SMA") {
+                    std::cout << "setting sma flag to 1"<<std::endl;
                     sma_flag = 1;
                 }
             }

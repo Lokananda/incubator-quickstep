@@ -72,33 +72,52 @@ bool SelectOperator::getAllWorkOrders(
       return true;
     }
 
+
     for (std::size_t part_id = 0; part_id < num_partitions_; ++part_id) {
         for (const block_id input_block_id : input_relation_block_ids_[part_id]) {
-            const quickstep::SMAIndexSubBlock *sma_index_sub_block = (quickstep::SMAIndexSubBlock*)input_relation_global_sma_.at(input_block_id);
             
-            const ComparisonPredicate *pred;
+  
             if (sma_flag == 1) {
-            
-                if (predicate->getPredicateType() == kComparison) {
-                    pred = (const ComparisonPredicate *)predicate;
-                }
-                    sma_internal::Selectivity selectivity = sma_index_sub_block->selectivityForPredicate(*pred);
-                    if (selectivity == sma_internal::Selectivity::kAll || selectivity == sma_internal::Selectivity::kSome) {
-                        numa_node_id numa_node = 0;
+                if(!input_relation_global_sma_.empty()) {
+                    std::cout<< "Fetching SMABlock of blockid"<< input_block_id <<std::endl;
+                    
+                    if (input_relation_global_sma_.find(input_block_id) != input_relation_global_sma_.end()) {
+                        const quickstep::SMAIndexSubBlock *sma_index_sub_block = (quickstep::SMAIndexSubBlock*)input_relation_global_sma_.at(input_block_id);
+                        
+                        const ComparisonPredicate *pred;
+                        
+                        
+                        //if (predicate->getPredicateType() == kComparison) {
+                            pred = (const ComparisonPredicate *)predicate;
+                        //} else {
+                        //    std::cout<< "Wrong predicate" <<std::endl;
+                        //}
+                        sma_internal::Selectivity selectivity = sma_index_sub_block->selectivityForPredicate(*pred);
+                        if (selectivity == sma_internal::Selectivity::kAll || selectivity == sma_internal::Selectivity::kSome) {
+                            numa_node_id numa_node = 0;
 #ifdef QUICKSTEP_HAVE_LIBNUMA
-                        if (input_relation_.hasNUMAPlacementScheme()) {
-                            numa_node = placement_scheme_->getNUMANodeForBlock(input_block_id);
-                        }
+                            if (input_relation_.hasNUMAPlacementScheme()) {
+                                numa_node = placement_scheme_->getNUMANodeForBlock(input_block_id);
+                            }
 #endif  // QUICKSTEP_HAVE_LIBNUMA
-                        container->addNormalWorkOrder(
-                                                      new SelectWorkOrder(query_id_, input_relation_, part_id, input_block_id, predicate, simple_projection_,
-                                                                          simple_selection_, selection, output_destination, storage_manager,
-                                                                          CreateLIPFilterAdaptiveProberHelper(lip_deployment_index_, query_context), numa_node),
-                                                      op_index_);
+                            container->addNormalWorkOrder(
+                                                          new SelectWorkOrder(query_id_, input_relation_, part_id, input_block_id, predicate, simple_projection_,
+                                                                              simple_selection_, selection, output_destination, storage_manager,
+                                                                              CreateLIPFilterAdaptiveProberHelper(lip_deployment_index_, query_context), numa_node),
+                                                          op_index_);
+                        } else {
+                            std::cout << "Zero selectivity" << std::endl;
+                        }
+                    } else {
+                        std::cout << "Key not found" << std::endl;
                     }
+                } else {
+                    std::cout<< "SMA Empty" <<std::endl;
+                }
     
             }
             else {
+                std::cout << "using non sma path" << std::endl;
                     for (std::size_t part_id = 0; part_id < num_partitions_; ++part_id) {
                       for (const block_id input_block_id : input_relation_block_ids_[part_id]) {
                         numa_node_id numa_node = 0;
