@@ -373,6 +373,13 @@ class SMAIndexSubBlock : public IndexSubBlock {
   std::uint32_t getCount() const {
     return reinterpret_cast<sma_internal::SMAHeader*>(sub_block_memory_)->count_aggregate;
   }
+  
+    /**
+     * @brief Returns the result of getSelectivity for predicate.
+     *
+     * @return Selectivity for predicate.
+     */
+ sma_internal::Selectivity selectivityForPredicate(const ComparisonPredicate &predicate) const;
     
  private:
   bool requiresRebuild() const;

@@ -601,6 +601,10 @@ void SMAIndexSubBlock::addTuple(tuple_id tuple) {
   header_->count_aggregate++;
 }
 
+Selectivity SMAIndexSubBlock::selectivityForPredicate(const ComparisonPredicate &predicate) const {
+    return getSelectivityForPredicate(predicate);
+}
+    
 Selectivity SMAIndexSubBlock::getSelectivityForPredicate(const ComparisonPredicate &predicate) const {
   if (!header_->index_consistent) {
     return Selectivity::kUnknown;

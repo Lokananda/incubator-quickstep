@@ -39,9 +39,12 @@
 #include "utility/lip_filter/LIPFilterAdaptiveProber.hpp"
 #include "utility/lip_filter/LIPFilterUtil.hpp"
 
+#include "expressions/predicate/Predicate.hpp"
+
 #include "glog/logging.h"
 
 #include "tmb/id_typedefs.h"
+
 
 namespace quickstep {
 
@@ -73,11 +76,13 @@ bool SelectOperator::getAllWorkOrders(
         for (const block_id input_block_id : input_relation_block_ids_[part_id]) {
             const quickstep::SMAIndexSubBlock *sma_index_sub_block = (quickstep::SMAIndexSubBlock*)input_relation_global_sma_.at(input_block_id);
             
-            
+            const ComparisonPredicate *pred;
             if (sma_flag == 1) {
             
-
-                    sma_internal::Selectivity selectivity = sma_index_sub_block->getSelectivityForPredicate(predicate);
+                //if (predicate->getPredicateType() == kComparison) {
+                    pred = (const ComparisonPredicate *)predicate;
+                //}
+                    sma_internal::Selectivity selectivity = sma_index_sub_block->selectivityForPredicate(*pred);
                     if (selectivity == sma_internal::Selectivity::kAll || selectivity == sma_internal::Selectivity::kSome) {
                         numa_node_id numa_node = 0;
 #ifdef QUICKSTEP_HAVE_LIBNUMA

@@ -42,7 +42,7 @@
 
 #include "utility/Macros.hpp"
 #include "utility/lip_filter/LIPFilterAdaptiveProber.hpp"
-
+#include "expressions/predicate/Predicate.hpp"
 #include "glog/logging.h"
 
 #include "tmb/id_typedefs.h"
@@ -126,7 +126,7 @@ class SelectOperator : public RelationalOperator {
             }
         }
         if (sma_flag == 1) {
-            if (input_relation.getSMAHash() != NULL) {
+            if (!input_relation.getSMAHash().empty()) {
                 input_relation_global_sma_ = input_relation.getSMAHash();
             }
         }
@@ -263,7 +263,7 @@ class SelectOperator : public RelationalOperator {
   // input relation that belong to the partition i.
   std::vector<std::vector<block_id>> input_relation_block_ids_;
     
-   std::unordered_map<block_id, SMAIndexSubBlock> input_relation_global_sma_;
+   std::unordered_map<block_id, const IndexSubBlock*> input_relation_global_sma_;
    int sma_flag;
   // A single workorder is generated for each block in each partition of input relation.
   std::vector<std::size_t> num_workorders_generated_;
