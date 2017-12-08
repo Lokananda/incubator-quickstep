@@ -126,6 +126,7 @@ class SelectOperator : public RelationalOperator {
 #ifdef QUICKSTEP_HAVE_LIBNUMA
     placement_scheme_ = input_relation.getNUMAPlacementSchemePtr();
 #endif
+    std::cout << "Relation name" << input_relation.getName() << std::end;
     if (input_relation_is_stored) {
         
         if (input_relation.hasIndexScheme()) {
@@ -155,6 +156,8 @@ class SelectOperator : public RelationalOperator {
         DCHECK_EQ(1u, num_partitions_);
         input_relation_block_ids_[0] = input_relation.getBlocksSnapshot();
       }
+    } else {
+        std::cout << "input relation is not stored" <<std::endl;
     }
   }
 

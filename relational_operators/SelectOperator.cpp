@@ -72,7 +72,7 @@ bool SelectOperator::getAllWorkOrders(
       return true;
     }
 
-
+      sma_flag = 1;
     for (std::size_t part_id = 0; part_id < num_partitions_; ++part_id) {
         for (const block_id input_block_id : input_relation_block_ids_[part_id]) {
             
