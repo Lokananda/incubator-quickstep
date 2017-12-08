@@ -79,9 +79,9 @@ bool SelectOperator::getAllWorkOrders(
             const ComparisonPredicate *pred;
             if (sma_flag == 1) {
             
-                //if (predicate->getPredicateType() == kComparison) {
+                if (predicate->getPredicateType() == kComparison) {
                     pred = (const ComparisonPredicate *)predicate;
-                //}
+                }
                     sma_internal::Selectivity selectivity = sma_index_sub_block->selectivityForPredicate(*pred);
                     if (selectivity == sma_internal::Selectivity::kAll || selectivity == sma_internal::Selectivity::kSome) {
                         numa_node_id numa_node = 0;

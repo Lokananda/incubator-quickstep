@@ -90,6 +90,17 @@ class SelectOperator : public RelationalOperator {
    *        is fully available to the operator before it can start generating
    *        workorders.
    **/
+    
+    enum PredicateType {
+        kTrue = 0,
+        kFalse,
+        kComparison,
+        kNegation,
+        kConjunction,
+        kDisjunction,
+        kNumPredicateTypes  // Not a real PredicateType, exists for counting purposes.
+    };
+    
   SelectOperator(
       const std::size_t query_id,
       const CatalogRelation &input_relation,
