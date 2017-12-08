@@ -208,7 +208,7 @@ void CatalogRelation::addSMAEntriesForBlock(block_id id, const IndexSubBlock &in
     //std::make_pair(id, &index_sub_block);
 }
 
-    std::unordered_map<block_id, const IndexSubBlock*> CatalogRelation::getSMAHash()
+std::unordered_map<block_id, const IndexSubBlock*> CatalogRelation::getSMAHash() const
 {
   return sma_hash_;
 }

@@ -126,8 +126,8 @@ class SelectOperator : public RelationalOperator {
             }
         }
         if (sma_flag == 1) {
-            if (*input_relation.getSMAHash() != nullptr) {
-                input_relation_global_sma_ = *input_relation.getSMAHash();
+            if (input_relation.getSMAHash() != NULL) {
+                input_relation_global_sma_ = input_relation.getSMAHash();
             }
         }
         

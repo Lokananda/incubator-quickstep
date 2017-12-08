@@ -430,7 +430,7 @@ class CatalogRelation : public CatalogRelationSchema {
     void addSMAEntriesForBlock(block_id id, const IndexSubBlock &index_sub_block);
     
     // return sma hash
-    std::unordered_map<block_id, const IndexSubBlock*> getSMAHash();
+    std::unordered_map<block_id, const IndexSubBlock*> getSMAHash() const;
 
  private:
   // A list of blocks belonged to the relation.
