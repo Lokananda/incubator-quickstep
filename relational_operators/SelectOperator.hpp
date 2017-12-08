@@ -37,6 +37,9 @@
 #include "relational_operators/RelationalOperator.hpp"
 #include "relational_operators/WorkOrder.hpp"
 #include "storage/StorageBlockInfo.hpp"
+
+#include "storage/SMAIndexSubBlock.hpp"
+
 #include "utility/Macros.hpp"
 #include "utility/lip_filter/LIPFilterAdaptiveProber.hpp"
 
@@ -113,9 +116,24 @@ class SelectOperator : public RelationalOperator {
     placement_scheme_ = input_relation.getNUMAPlacementSchemePtr();
 #endif
     if (input_relation_is_stored) {
+        
+        if (input_relation.hasIndexScheme()) {
+            for (const auto &index : input_relation.getIndexScheme()) {
+                const IndexSubBlockDescription &index_description = index.second;
+                if (index_description.IndexSubBlockType_Name(index_description.sub_block_type()) == "SMA") {
+                    sma_flag = 1;
+                }
+            }
+        }
+        if (sma_flag == 1) {
+            if (*input_relation.getSMAHash() != nullptr) {
+                input_relation_global_sma_ = *input_relation.getSMAHash();
+            }
+        }
+        
       if (input_relation.hasPartitionScheme()) {
         const PartitionScheme &part_scheme = *input_relation.getPartitionScheme();
-
+        
         for (std::size_t part_id = 0; part_id < num_partitions_; ++part_id) {
           input_relation_block_ids_[part_id] = part_scheme.getBlocksInPartition(part_id);
         }
@@ -244,6 +262,9 @@ class SelectOperator : public RelationalOperator {
   // A vector of vectors V where V[i] indicates the list of block IDs of the
   // input relation that belong to the partition i.
   std::vector<std::vector<block_id>> input_relation_block_ids_;
+    
+   std::unordered_map<block_id, SMAIndexSubBlock> input_relation_global_sma_;
+   int sma_flag;
   // A single workorder is generated for each block in each partition of input relation.
   std::vector<std::size_t> num_workorders_generated_;
 
@@ -376,6 +397,7 @@ class SelectWorkOrder : public WorkOrder {
   const bool simple_projection_;
   const std::vector<attribute_id> simple_selection_;
   const std::vector<std::unique_ptr<const Scalar>> *selection_;
+
 
   InsertDestination *output_destination_;
   StorageManager *storage_manager_;
