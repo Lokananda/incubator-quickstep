@@ -25,6 +25,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "catalog/Catalog.pb.h"
 #include "catalog/CatalogConfig.h"
@@ -45,8 +46,11 @@
 #include "threading/SharedMutex.hpp"
 #include "threading/SpinSharedMutex.hpp"
 #include "utility/Macros.hpp"
+#include "storage/SMAIndexSubBlock.hpp"
 
 #include "glog/logging.h"
+
+// typedef std::unordered_map<block_id, std::vector<SMAIndexSubBlock&> > SMAHash;
 
 namespace quickstep {
 
@@ -422,6 +426,12 @@ class CatalogRelation : public CatalogRelationSchema {
            kSlotSizeBytes;
   }
 
+    // add entry to sma hash
+    void addSMAEntriesForBlock(block_id id, const IndexSubBlock &index_sub_block);
+    
+    // return sma hash
+    std::unordered_map<block_id, const IndexSubBlock*> getSMAHash();
+
  private:
   // A list of blocks belonged to the relation.
   std::vector<block_id> blocks_;
@@ -444,6 +454,9 @@ class CatalogRelation : public CatalogRelationSchema {
   alignas(kCacheLineBytes) mutable SpinSharedMutex<false> index_scheme_mutex_;
 
   std::unique_ptr<CatalogRelationStatistics> statistics_;
+  
+  // map for SMA sub blocks per block id
+  std::unordered_map<block_id, const IndexSubBlock*> sma_hash_;
 
 #ifdef QUICKSTEP_HAVE_LIBNUMA
   // NUMA placement scheme object which has the mapping between the partitions

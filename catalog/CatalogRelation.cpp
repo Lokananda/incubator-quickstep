@@ -22,6 +22,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "catalog/Catalog.pb.h"
 #include "catalog/CatalogAttribute.hpp"
@@ -198,6 +199,18 @@ const StorageBlockLayout& CatalogRelation::getDefaultStorageBlockLayout() const 
   }
 
   return *default_layout_;
+}
+    
+void CatalogRelation::addSMAEntriesForBlock(block_id id, const IndexSubBlock &index_sub_block)
+{
+    
+    sma_hash_.insert(std::make_pair(id, &index_sub_block));
+    //std::make_pair(id, &index_sub_block);
+}
+
+    std::unordered_map<block_id, const IndexSubBlock*> CatalogRelation::getSMAHash()
+{
+  return sma_hash_;
 }
 
 }  // namespace quickstep

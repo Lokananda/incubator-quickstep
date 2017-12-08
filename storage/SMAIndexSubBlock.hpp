@@ -199,6 +199,7 @@ class SMAIndexSubBlock : public IndexSubBlock {
                    void *sub_block_memory,
                    const std::size_t sub_block_memory_size);
 
+
   /**
    * @brief Frees data associated with variable length attributes.
    *
@@ -372,7 +373,7 @@ class SMAIndexSubBlock : public IndexSubBlock {
   std::uint32_t getCount() const {
     return reinterpret_cast<sma_internal::SMAHeader*>(sub_block_memory_)->count_aggregate;
   }
-
+    
  private:
   bool requiresRebuild() const;
 

@@ -61,6 +61,7 @@
 
 #include "tmb/id_typedefs.h"
 
+
 using std::fprintf;
 using std::fputc;
 using std::fputs;
@@ -197,13 +198,12 @@ void ExecuteAnalyze(const PtrVector<ParseString> &arguments,
     
     // Analyze each relation in the database.
     for (const CatalogRelation &relation : relations) {
+        CatalogRelation *mutable_relation =
+        query_processor->getDefaultDatabase()->getRelationByIdMutable(relation.getID());
+        
         fprintf(out, "Analyzing SMA %s ... ", relation.getName().c_str());
         fflush(out);
-        
-        std::vector<block_id> block_ids = relation.getBlocksSnapshot();
-        for (auto it = block_ids.begin(); it != block_ids.end(); it++) {
-            std::cout << *it << std::endl;
-        }
+
         ostringstream oss;
         int sma_flag = 0;
         
@@ -215,8 +215,9 @@ void ExecuteAnalyze(const PtrVector<ParseString> &arguments,
              oss << " Indexes" << '\n';
             for (const auto &index : relation.getIndexScheme()) {
                 const IndexSubBlockDescription &index_description = index.second;
-                if (index_description.IndexSubBlockType_Name(index_description.sub_block_type()) == "IndexSubBlockDescription_IndexSubBlockType_SMA") {
+                if (index_description.IndexSubBlockType_Name(index_description.sub_block_type()) == "SMA") {
                         sma_flag = 1;
+                        std::cout << "sma found" << std::endl;
                     }
                 oss << "  \"" << index.first << "\" "
                 << index_description.IndexSubBlockType_Name(index_description.sub_block_type())
@@ -230,22 +231,38 @@ void ExecuteAnalyze(const PtrVector<ParseString> &arguments,
         }
         
         if (sma_flag) {
+            // get blocks
+            std::vector<block_id> block_ids = relation.getBlocksSnapshot();
+            for (auto it = block_ids.begin(); it != block_ids.end(); it++) {
+                std::cout << *it << std::endl;
+            }
             // get smaindex sub block for each block
             for (auto it = block_ids.begin(); it != block_ids.end(); it++) {
                 std::cout << *it << std::endl;
-                BlockReference block = storage_manager->getBlock(*it, relation);
-                int index_size = block->numIndexSubBlocks();
+                const BlockReference block_ref = storage_manager->getBlock(*it, relation);
+                int index_size = block_ref->numIndexSubBlocks();
                 for (int i = 0; i < index_size; i++) {
                     // this will return smaIndexSubBlock pointer which has
+                    //
                     // SMAEntry entries_ pointer - maybe have to write function in that
                     // class to return these entries pointer - which is the
                     // pointer to the beginning of SMA entries - we have to dereference it
                     // this pointer will have num_indexed_attributes_ entries in it (one
                     // for each attribute - can use addTuple code here to iterate
                     // or just memcpy all entries to global place ** (iteration can be used while querying
-                    const IndexSubBlock &index_sub_block = block->getIndexSubBlock(i);
+                    const IndexSubBlock &index_sub_block = block_ref->getIndexSubBlock(i);
+                    //SMAIndexSubBlock myIndexSubBlock = new SMAIndexSubBlock(index_sub_block);
+                    IndexSubBlockType index_type = index_sub_block.getIndexSubBlockType();
+                    std::cout << "index type got from index sub block " << index_type << std::endl;
+                    if (index_type == kSMA) {
+                        // add this to global sma
+                        //relation.sma_hash[*it]
+                        //()index_sub_block.getSMAEntryPointer();
+                        mutable_relation->addSMAEntriesForBlock(*it, index_sub_block);
+                    }
+                    
                 }
-                const TupleStorageSubBlock &tuple_store = block->getTupleStorageSubBlock();
+                //const TupleStorageSubBlock &tuple_store = block->getTupleStorageSubBlock();
             }
             
         } else {
@@ -256,8 +273,8 @@ void ExecuteAnalyze(const PtrVector<ParseString> &arguments,
         
         std::cout << oss.str();
         
-        CatalogRelation *mutable_relation =
-        query_processor->getDefaultDatabase()->getRelationByIdMutable(relation.getID());
+        // CatalogRelation *mutable_relation =
+        // query_processor->getDefaultDatabase()->getRelationByIdMutable(relation.getID());
         CatalogRelationStatistics *mutable_stat =
         mutable_relation->getStatisticsMutable();
         
@@ -339,7 +356,7 @@ void ExecuteAnalyze(const PtrVector<ParseString> &arguments,
         fprintf(out, "done\n");
         fflush(out);
     }
-
+         
 //  // Analyze each relation in the database.
 //  for (const CatalogRelation &relation : relations) {
 //    fprintf(out, "Analyzing %s ... ", relation.getName().c_str());

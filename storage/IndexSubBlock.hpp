@@ -180,7 +180,7 @@ class IndexSubBlock {
    *         enough space to index all the tuples in tuple_store_.
    **/
   virtual bool rebuild() = 0;
-
+    
  protected:
   void *sub_block_memory_;
   const std::size_t sub_block_memory_size_;
