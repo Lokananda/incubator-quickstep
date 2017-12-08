@@ -207,23 +207,26 @@ class SelectOperator : public RelationalOperator {
 #ifdef QUICKSTEP_HAVE_LIBNUMA
     placement_scheme_ = input_relation.getNUMAPlacementSchemePtr();
 #endif
-    std::cout << "Relation name" << input_relation.getName() << std::endl;
+    //std::cout << "Relation name" << input_relation.getName() << std::endl;
 
     if (input_relation_is_stored) {
         if (input_relation.hasIndexScheme()) {
             for (const auto &index : input_relation.getIndexScheme()) {
                 const IndexSubBlockDescription &index_description = index.second;
-                std::cout << "Checking index type" << std::endl;
-                std::cout << index_description.IndexSubBlockType_Name(index_description.sub_block_type()) << std::endl;
+                //std::cout << "Checking index type" << std::endl;
+                //std::cout << index_description.IndexSubBlockType_Name(index_description.sub_block_type()) << std::endl;
                 if (index_description.IndexSubBlockType_Name(index_description.sub_block_type()) == "SMA") {
-                    std::cout << "setting sma flag to 1"<<std::endl;
+                   // std::cout << "setting sma flag to 1"<<std::endl;
                     sma_flag = 1;
                 }
             }
         }
         if (sma_flag == 1) {
             if (!input_relation.getSMAHash().empty()) {
+                //std::cout << "got SMA hash" << std::endl;
                 input_relation_global_sma_ = input_relation.getSMAHash();
+            } else {
+               // std::cout << "SMA hash empty" << std::endl;
             }
         }
       if (input_relation.hasPartitionScheme()) {

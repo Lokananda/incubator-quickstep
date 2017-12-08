@@ -79,7 +79,7 @@ bool SelectOperator::getAllWorkOrders(
   
             if (sma_flag == 1) {
                 if(!input_relation_global_sma_.empty()) {
-                    std::cout<< "Fetching SMABlock of blockid"<< input_block_id <<std::endl;
+                    //std::cout<< "Fetching SMABlock of blockid"<< input_block_id <<std::endl;
                     
                     if (input_relation_global_sma_.find(input_block_id) != input_relation_global_sma_.end()) {
                         const quickstep::SMAIndexSubBlock *sma_index_sub_block = (quickstep::SMAIndexSubBlock*)input_relation_global_sma_.at(input_block_id);
