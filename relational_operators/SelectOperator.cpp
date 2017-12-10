@@ -106,7 +106,7 @@ bool SelectOperator::getAllWorkOrders(
                                                                               CreateLIPFilterAdaptiveProberHelper(lip_deployment_index_, query_context), numa_node),
                                                           op_index_);
                         } else {
-                            std::cout << "Zero selectivity" << std::endl;
+                           // std::cout << "Zero selectivity" << std::endl;
                         }
                     } else {
                         std::cout << "Key not found" << std::endl;

@@ -676,8 +676,8 @@ predicate_cost_t SMAIndexSubBlock::estimatePredicateEvaluationCost(
 TupleIdSequence* SMAIndexSubBlock::getMatchesForPredicate(
     const ComparisonPredicate &predicate,
     const TupleIdSequence *filter) const {
-  Selectivity selectivity = getSelectivityForPredicate(predicate);
-  if (selectivity == Selectivity::kAll) {
+  //Selectivity selectivity = getSelectivityForPredicate(predicate);
+  if (1 /*selectivity == Selectivity::kAll*/) {
     if (filter != nullptr) {
       return new TupleIdSequence(filter->length(), filter->getInternalBitVector());
     } else {
@@ -695,10 +695,11 @@ TupleIdSequence* SMAIndexSubBlock::getMatchesForPredicate(
       }
       return tidseq;
     }
-  } else if (selectivity == Selectivity::kNone) {
+  }
+  /*else if (selectivity == Selectivity::kNone) {
     // A new tuple ID sequence is initialized to false for all values.
     return new TupleIdSequence(tuple_store_.numTuples());
-  }
+  }*/
   LOG(FATAL) << "SMAIndex failed to evaluate predicate. The SMA should not have been used";
   return nullptr;
 }
