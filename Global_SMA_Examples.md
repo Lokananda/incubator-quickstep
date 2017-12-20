@@ -1,4 +1,5 @@
-# Global SMA Index ReadMe
+# Global SMA Index
+
 
 This readme gives brief implmentation details of Global SMA Index in Quickstep and examples of how to test it.
 
