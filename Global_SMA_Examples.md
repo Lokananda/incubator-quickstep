@@ -34,9 +34,9 @@ CREATE INDEX sma_lo ON lineorder14 USING SMA;
 
 3. Populate the table lineorder14 with the data
 
-3.1 Run 8M_bulk_insert (obtained by compiling gen_wload_table_4col_bulk_insert.cpp) to create data with uniform distribution.
+..* Run 8M_bulk_insert (obtained by compiling gen_wload_table_4col_bulk_insert.cpp) to create data with uniform distribution.
 
-3.2 Bulk insert these tuples into the database
+..* Bulk insert these tuples into the database
 
 
 4. Building Global SMA Index for the above table
@@ -50,7 +50,7 @@ quickstep> \analyse
 
 SELECT * FROM lineorder14_c WHERE lo_custkey<=499;
 
-Note lo_custkey is a sorted column
+Note 'lo_custkey' is a sorted column
 
 
 6. Execute sample select query to test the performance of Quickstep with Global SMA at 1% selectivity
@@ -62,12 +62,18 @@ SELECT * FROM lineorder14_c WHERE lo_custkey<=49;
 ## Major QuickStep Files Modified
 
 cli/CommandExecutor.cpp
+
 catalog/CatalogRelation.cpp
+
 catalog/CatalogRelation.hpp
+
 relational_operators/SelectOperator.cpp
+
 relational_operators/SelectOperator.hpp
 
 Other files and Folder
+
 Global_SMA_workload directory has the script to generate data for our workload
+
 Global_SMA_examples directory has SQL commands to execute the workload
 
