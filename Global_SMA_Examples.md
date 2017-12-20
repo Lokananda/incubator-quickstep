@@ -21,22 +21,22 @@ We have modified the Select Operator to use the Global SMA Index if it the relat
 
 e.g.
 
-CREATE TABLE lineorder14 (
+`CREATE TABLE lineorder14 (
   lo_orderkey      INT NOT NULL,
   lo_linenumber    INT NOT NULL,
   lo_custkey       INT NOT NULL,
   lo_orderpriority CHAR(200) NOT NULL
 ) WITH BLOCKPROPERTIES (
 TYPE split_rowstore,
-BLOCKSIZEMB 2);
+BLOCKSIZEMB 2);`
 
 CREATE INDEX sma_lo ON lineorder14 USING SMA;
 
 3. Populate the table lineorder14 with the data
 
-..* Run 8M_bulk_insert (obtained by compiling gen_wload_table_4col_bulk_insert.cpp) to create data with uniform distribution.
+  * Run 8M_bulk_insert (obtained by compiling gen_wload_table_4col_bulk_insert.cpp) to create data with uniform distribution.
 
-..* Bulk insert these tuples into the database
+  * Bulk insert these tuples into the database
 
 
 4. Building Global SMA Index for the above table
@@ -48,14 +48,14 @@ quickstep> \analyse
 
 5. Execute sample select query to test the performance of Quickstep with Global SMA at 10% selectivity
 
-SELECT * FROM lineorder14_c WHERE lo_custkey<=499;
+`SELECT * FROM lineorder14_c WHERE lo_custkey<=499;`
 
 Note 'lo_custkey' is a sorted column
 
 
 6. Execute sample select query to test the performance of Quickstep with Global SMA at 1% selectivity
 
-SELECT * FROM lineorder14_c WHERE lo_custkey<=49;
+`SELECT * FROM lineorder14_c WHERE lo_custkey<=49;`
 
 7. Observe that query response time for different select queries
 
