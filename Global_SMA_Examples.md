@@ -59,10 +59,15 @@ SELECT * FROM lineorder14_c WHERE lo_custkey<=49;
 
 7. Observe that query response time for different select queries
 
-## Major Files Modified
+## Major QuickStep Files Modified
 
 cli/CommandExecutor.cpp
 catalog/CatalogRelation.cpp
 catalog/CatalogRelation.hpp
 relational_operators/SelectOperator.cpp
 relational_operators/SelectOperator.hpp
+
+Other files and Folder
+Global_SMA_workload directory has the script to generate data for our workload
+Global_SMA_examples directory has SQL commands to execute the workload
+
